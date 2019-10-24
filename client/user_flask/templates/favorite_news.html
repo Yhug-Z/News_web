@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Favorite_news</title>
+    <script src="/static/js/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="favorite_news">
+        <h1>新闻</h1>
+        <table id="newsTab" border="1px">
+            <tr>
+                <th>新闻名</th>
+                <th>新闻ID</th>
+                <th>删除新闻</th>
+            </tr>
+        </table>
+    </div>
+    <br><br>
+    <!-- <div>
+        <span>添加新闻：</span><input type="text" id="title"><br>
+        <input type="button" value="添加" onclick="addFavorite()">
+    </div> -->
+    <script>
+        $(function () {
+            // console.log(5);
+            var token = window.localStorage.getItem('news_token');
+            var UT = window.location.href.split('/');
+            var username = UT[UT.length - 4];
+            var title_id = UT[UT.length - 1];
+            var title=UT[UT.length - 2];
+            // console.log(username,title_id);
+            // username='abc'
+            token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYyIsImV4cCI6MTU3MTgzMDYyMS4yNjUzMDU4fQ.5j9NkhSgailga4BFyimvD64JVOxBKab4y19Pw2zpLZk';
+            $("h1").text(username + " 收藏夹"+title)
+            $.ajax({
+                type: "GET",
+                contentType: "application/json",
+                dataType: "json",
+                url: "http://176.47.10.229:8000/v1/favorite/" + username+"/"+title_id,
+                // data:data,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function (result) {
+                    if (result.code == 200) {
+                        var news = result.data.news
+                        var html = ''
+                        var aUrl = ""
+                        console.log(aUrl);
+                        for (i = 0; i < news.length; i++) {
+                            html += "<tr><td>" + '<a href='+""+'>' + news[i].title + '</a>' + "</td>";
+                            html += "<td>" + news[i].news_id + "</td>";
+                            html += "<td>" + "<a onclick='delFunc(" + news[i].news_id + ")'>删除</a></td></tr>"
+                        }
+                        $("#newsTab").append(html)
+                    } else {
+                        alert(result.error)
+                        location.reload
+                    }
+                }
+            });
+        });
+        function addFavorite() {
+            // console.log(5);
+            var title = $('#title').val();
+            // console.log(title);
+            var data = JSON.stringify({ 'title': title });
+            // console.log(data);
+            var token = window.localStorage.getItem('news_token');
+            var username = window.location.href.split('/');
+            username = username[username.length - 2];
+            // console.log(username);
+            token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYyIsImV4cCI6MTU3MTgzMDYyMS4yNjUzMDU4fQ.5j9NkhSgailga4BFyimvD64JVOxBKab4y19Pw2zpLZk';
+            $.ajax({
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                url: "http://176.47.10.229:8000/v1/favorite/" + username,
+                data: data,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function (result) {
+                    if (result.code == 200) {
+                        alert('添加成功')
+                        location.reload(true)
+                    } else {
+                        alert(result.error)
+                        location.reload(true)
+                    }
+                }
+            });
+        };
+        function delFunc(news_id) {
+            console.log("del", news_id);
+            var token = window.localStorage.getItem('news_token');
+            var UT = window.location.href.split('/');
+            var username = UT[UT.length - 4];
+            var title_id = UT[UT.length - 1];
+            // console.log(username);
+            var data = JSON.stringify({ 'news_id': news_id });
+            token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFiYyIsImV4cCI6MTU3MTgzMDYyMS4yNjUzMDU4fQ.5j9NkhSgailga4BFyimvD64JVOxBKab4y19Pw2zpLZk';
+            $.ajax({
+                type: "DELETE",
+                contentType: "application/json",
+                dataType: "json",
+                url: "http://176.47.10.229:8000/v1/favorite/" + username+"/"+title_id,
+                data: data,
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function (result) {
+                    if (result.code == 200) {
+                        alert('删除成功')
+                        location.reload(true)
+                    } else {
+                        alert(result.error)
+                        location.reload(true)
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="/static/css/login_reglogin.css" rel='stylesheet' type='text/css'/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/static/js/jquery.min.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="bg">
+    <img src="/static/images/c.jpg" alt="">
+</div>
+
+<div class="main">
+    <div class="header">
+        <h1>创建一个新账户！</h1>
+    </div>
+    <p></p>
+    <ul class="left-form">
+        <h2>新账户:</h2>
+        <li>
+            <input type="text" class="username" name="username" placeholder="请输入用户名" required maxlength="11"/>
+            <div class="clear"></div>
+        </li>
+        <li>
+            <input type="radio" class="gender" name="gender" value="m" checked/>男
+            <input type="radio" class="gender" name="gender" value="f"/>女
+            <div class="clear"></div>
+        </li>
+        <li>
+            <input type=" " class="year"
+                   name="year" maxlength="4"
+                   placeholder="请输入年"
+                   onkeyup="value=value.replace(/[^\d]/g,'')"
+                   onblur="value=value.replace(/[^\d]/g,'')"
+            />年
+            <input type=" " class="month"
+                   name="month" maxlength="2"
+                   placeholder="请输入月"
+                   onkeyup="value=value.replace(/[^\d]/g,'')"
+                   onblur="value=value.replace(/[^\d]/g,'')"
+            />月
+            <input type=" " class="day"
+                   name="day" maxlength="2"
+                   placeholder="请输入日"
+                   onkeyup="value=value.replace(/[^\d]/g,'')"
+                   onblur="value=value.replace(/[^\d]/g,'')"
+            />日
+            <div class="clear"></div>
+        </li>
+        <li>
+            <input type="password" class="password_1" name="password_1" placeholder="请输入密码" required minlength="6"
+                   maxlength="11"/>
+            <div class="clear"></div>
+        </li>
+        <li>
+            <input type="password" class="password_2" name="password_2" placeholder="请再次确认密码" required minlength="6"
+                   maxlength="11"/>
+            <div class="clear"></div>
+        </li>
+        <li style="border:none">
+            <input type="button" value="创建并登录" onclick="register()">
+        </li>
+    </ul>
+    <div class="clear"></div>
+</div>
+</body>
+
+
+<script>
+        function register(){
+        var username = $('.username').val()
+        var gender = $('.gender:checked').val()
+        var year = $('.year').val()
+        var month = $('.month').val()
+        var day = $('.day').val()
+        var birthday = year + '-' + month + '-' + day
+        var password_1 = $('.password_1').val()
+        var password_2 = $('.password_2').val()
+        var post_data = {'username':username,
+                          'gender':gender,
+                          'birthday': birthday,
+                          'password_1':password_1,
+                          'password_2':password_2
+                        }
+
+        $.ajax({
+        // 请求方式
+        type:"post",
+        // contentType 
+        contentType:"application/json",
+        // dataType
+        dataType:"json",
+        // url
+        url:"http://127.0.0.1:8000/v1/users",
+        // 把JS的对象或数组序列化一个json 字符串
+        data:JSON.stringify(post_data),
+        // result 为请求的返回结果对象
+        success:function (result) {
+            if (200 == result.code){
+                window.localStorage.setItem('news_token', result.data.token)
+                window.localStorage.setItem('news_user', result.username)
+                alert("注册成功 点击确认即可跳转新闻首页")
+                window.location.href = '/index';
+            }else{
+                alert(result.error)
+            }
+        }
+    });
+
+    }
+
+
+
+</script>
+
+
+</html>

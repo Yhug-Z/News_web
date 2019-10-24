@@ -1,0 +1,15 @@
+#bg{
+    position: fixed;
+}
+#bg #bgimg{
+    transform: translate3d(0px, 0px, 0px);
+    height: 1225px;
+    width: 1838px;
+    position: relative;
+}
+#biaoti{
+    width: 1838px;
+}
+#biaoti h1{
+    align-content: center;
+}
