@@ -1,0 +1,155 @@
+
+<!doctype html>
+<html>
+<!--
+author:yanglong
+date:2019-10
+desc:this demo is about news. PLEASE NOTE:If you have trouble running it ,try any of the other demos or connect with
+auther.
+A ny individuals and organizations and not for commercial use, professiona website for customized web site.
+-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/static/images/bitbug_favicon.ico" type="image/x-icon"/>
+    <link href="/static/css/base.css" rel="stylesheet">
+    <link href="/static/css/index.css" rel="stylesheet">
+    <link href="/static/css/m.css" rel="stylesheet">
+    <script src="/static/js/jquery.min.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.easyfader.min.js"></script>
+    <script src="/static/js/scrollReveal.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script src="/static/js/tools.js"></script>
+    <style>
+        .blogs{
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+<header id="header">
+    <!--menu begin-->
+    <div class="menu" style="background-color: black;">
+        <nav class="nav" id="topnav">
+            <h1 class="logo"><a href="/index">今日要闻</a></h1>
+            <li><a href="/index">首页</a></li>
+            <li><a href="/politics">国内</a></li>
+            <li><a href="/foreign" style="color: #fff638;">国际</a></li>
+            <li><a href="/finance">财经</a></li>
+            <li><a href="/tec">科技</a></li>
+            <li><a href="/sport">体育</a></li>
+            <li><a href="/ent">娱乐</a></li>
+        </nav>
+    </div>
+    <a href="/login" id="login" target="_blank">登录</a>
+    <a href="/register" id="register" target="_blank">注册</a>
+    <!--menu end-->
+    <!--mnav begin-->
+    <div id="mnav">
+        <h2><a href="/index" class="logo" style="color: #fff638;">今日要闻</a><span class="navicon"></span></h2>
+        <dl class="list_dl">
+            <dt class="list_dt"><a href="/index">首页</a></dt>
+            <dt class="list_dt"><a href="#">新闻分类</a></dt>
+            <dd class="list_dd">
+                <ul>
+                    <li><a href="/politics">国内</a></li>
+                    <li><a href="/foreign">国际</a></li>
+                    <li><a href="/finance">财经</a></li>
+                    <li><a href="/tec">科技</a></li>
+                    <li><a href="/sport">体育</a></li>
+                    <li><a href="/ent">娱乐</a></li>
+                </ul>
+            </dd>
+            <dt class="list_dt"><a href="gbook.html">留言</a></dt>
+            <dt class="list_dt"><a href="about.html">关于我</a></dt>
+        </dl>
+    </div>
+    <!--mnav end-->
+</header>
+
+<article>
+    <div class="content">
+        <div class="blogsbox">
+
+        </div>
+
+
+        <!--<div class="sidebar">-->
+            <!--<div class="tuijian">-->
+                <!--<h2 class="hometitle">推荐文章</h2>-->
+                <!--<ul class="tjpic">-->
+                    <!--<i><img src="" id="rec_th1_img"></i>-->
+                    <!--<p><a href="" id="rec_th1_link"></a></p>-->
+                <!--</ul>-->
+                <!--<ul class="sidenews">-->
+                    <!--<li><i><img src="" id="rec_th1_1_img"></i>-->
+                        <!--<p><a href="" id="rec_th1_1_link"></a></p>-->
+                        <!--<span id="rec_th1_1_time"></span>-->
+                    <!--</li>-->
+                    <!--<li><i><img src="" id="rec_th1_2_img"></i>-->
+                        <!--<p><a href="" id="rec_th1_2_link"></a></p>-->
+                        <!--<span id="rec_th1_2_time"></span>-->
+                    <!--</li>-->
+                    <!--<li><i><img src="" id="rec_th1_3_img"></i>-->
+                        <!--<p><a href="" id="rec_th1_3_link"></a></p>-->
+                        <!--<span id="rec_th1_3_time"></span>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+
+            <!--<div class="tuijian">-->
+                <!--<h2 class="hometitle">点击排行</h2>-->
+                <!--<ul class="tjpic">-->
+                    <!--<i><img src="" id="rec_th2_img"></i>-->
+                    <!--<p><a href="" id="rec_th2_link"></a></p>-->
+                <!--</ul>-->
+                <!--<ul class="sidenews">-->
+                    <!--<li><i><img src="" id="rec_th2_1_img"></i>-->
+                        <!--<p><a href="" id="rec_th2_1_link"></a></p>-->
+                        <!--<span id="rec_th2_1_time"></span>-->
+                    <!--</li>-->
+                    <!--<li><i><img src="" id="rec_th2_2_img"></i>-->
+                        <!--<p><a href="" id="rec_th2_2_link"></a></p>-->
+                        <!--<span id="rec_th2_2_time"></span>-->
+                    <!--</li>-->
+                    <!--<li><i><img src="" id="rec_th2_3_img"></i>-->
+                        <!--<p><a href="" id="rec_th2_3_link"></a></p>-->
+                        <!--<span id="rec_th2_3_time"></span>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+        <!--</div>-->
+</article>
+
+</body>
+
+<script>
+    var get_url = "http://176.47.10.229:8000/v1/news/foreign";
+    var category = document.location.toString().split("/")[3];
+    var html_body = '';
+    $.ajax({
+        // 请求方式
+        type:"get",
+        // url
+        url: get_url,
+        success:function (result) {
+            if (200 == result.code){
+                // 请求成功
+                var content = $('.blogsbox');
+                for (var i=0;i<result.content.length;i++){
+                    html_body += HTML(result.content[i]['id'],result.content[i]['title'],result.content[i]['source'],
+                    result.content[i]['release_time'],result.content[i]['comment_number'],category,result
+                    .content[i]['img']);
+                }
+                content.html(html_body);
+                }else{
+                    alert(result.content);
+                }
+            }
+      });
+
+
+</script>
+
+</html>

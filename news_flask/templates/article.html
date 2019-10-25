@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Article</title>
+    <script src="../static/js/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="../static/css/comments.css">
+    <link href="../static/css/base.css" rel="stylesheet">
+    <link href="../static/css/index.css" rel="stylesheet">
+    <link href="../static/css/m.css" rel="stylesheet">
+    <script src="../static/js/jquery.min.js" type="text/javascript"></script>
+    <script src="../static/js/jquery.easyfader.min.js"></script>
+    <script src="../static/js/scrollReveal.js"></script>
+    <script src="../static/js/wangEditor.js"></script>
+    <!-- <script src="../static/js/common.js"></script> -->
+    <script src="../static/js/xcConfirm.js"></script>
+    <style>
+        body{
+            width: 100%;
+            text-align: center;
+        }
+        #news,#comment{
+            display: inline-block;
+            width: 52%;
+            text-align: center
+        }
+        hr{
+            display: inline-block;
+            width: 100%;
+        }
+        #content{
+            display: inline-block;
+            width: 100%;
+        }
+        #content{
+            text-align:left;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="news">
+        <h1 id="title"></h1>
+        <h5 id="timeSource"></h5>
+        <hr>
+        <div id="content"></div>
+    </div>
+    <div id="comment">
+        <h2>文章评论</h2>
+        <hr>
+        <h3 id="comments">到现在<span id="commentsnumber" class="commentsnumber"></span></h3>
+    </div>
+</body>
+
+<script>
+    var url = document.location.toString();
+    var arrUrl = url.split("/");
+    var newsId = arrUrl[arrUrl.length - 1];
+    $(function () {
+        var get_url = "http://176.47.10.229:8000/v1/news/" + newsId
+        console.log(get_url)
+        $.ajax({
+            type: 'get',
+            url: get_url,
+            // data:JSON.stringify(),
+            dataType: 'json',
+            success: function (result) {
+                if (200 == result.code) {
+		            console.log(result)
+                    var title = result.data.title;
+                    var content = result.data.content;
+                    content ='<p>'+content.replace(/\n/g,'<\p><p>')+'<\p>';
+                    var time = result.data.release_time;
+                    var source = result.data.source;
+                    $('#title').html(title);
+                    $('#timeSource').text('时间：' + time + ' 来源：' + source)
+                    $('#content').html(content)
+                } else {
+                    alert(result.error)
+                }
+            }
+        });
+    });
+
+    $(function () {
+        var get_url = "http://176.47.10.229:8000/v1/comment?news_id=" + newsId
+        // var get_url = "http://127.0.0.1:8000/v1/comment?news_id=1"
+        console.log(get_url)
+        $.ajax({
+            type: 'get',
+            url: get_url,
+            // data:JSON.stringify(),
+            dataType: 'json',
+            success: function (result) {
+                if (200 == result.code) {
+                    var messages_list = result.data.comment;
+                    $("#commentsnumber").text("有" + result.data.comment_count + "条评论")
+                    html_body = "";
+                    for (var message in messages_list) {
+                        html_body += '<ol class="commentlist">';
+                        html_body += '<li>';
+                        html_body += '<div class="top"><a href="#"  class="url">' + messages_list[message].publisher + '</a>';
+                        html_body += '<span class="time"> @';
+                        html_body += '<a href="" title="">' + messages_list[message].created_time + '</a>';
+                        html_body += '<a href="" class="replyComment" mid=' + messages_list[message].id + '>回复</a>';
+                        html_body += '</span>';
+                        html_body += '</div>';
+
+                        // avatar_url = 'http://127.0.0.1:8000/media/' + messages_list[message].publisher_avatar
+                        // html_body += '<div><img alt="" src="' + avatar_url + '" class="commentAvatar avatar-32 commentPhoto" height="32" width="32" /></div>';
+                        html_body += '<div class="body">';
+                        html_body += messages_list[message].content;
+                        html_body += '</div>';
+                        html_body += '</li>';
+
+                        var reply_list = messages_list[message].reply
+
+                        //console.log('reply_list is ')
+                        //console.log(reply_list)
+
+                        for (var rm in reply_list) {
+                            //console.log(reply_list[rm])
+                            html_body += '<li>';
+                            html_body += '<div class="reply">';
+                            html_body += '<div class="top">';
+                            html_body += '<a href="#" class="url">' + reply_list[rm].publisher + '</a>';
+                            html_body += '<span class="time">';
+                            html_body += '@ <a href="#" title="">' + reply_list[rm].created_time + '</a>';
+                            html_body += '</span>';
+                            html_body += '</div>';
+                            // var r_avatar_url = 'http://127.0.0.1:8000/media/' + reply_list[rm].publisher_avatar;
+                            // html_body += '<div><img alt="" src=" ' + r_avatar_url + '" class="commentAvatar avatar-32 commentPhoto" height="32" width="32"></div>';
+                            html_body += '<div class="body">' + reply_list[rm].content + '</div>';
+                            html_body += '</div>';
+                            html_body += '</li>';
+
+                        }
+                        html_body += '</ol>';
+                    }
+                    //弹窗回复
+                    html_body += '<div id="commentform">';
+                    html_body += '<h3 id="respond">在这添加你的留言！</h3>';
+                    html_body += '<dir id="editor"></dir>';
+                    html_body += '<br>';
+                    html_body += '<p>';
+                    html_body += '<input id="id_article" name="article" type="hidden" value="1">';
+                    html_body += '<input name="button" type="button" id="button" tabindex="5" value="提交" class="button" />';
+                    html_body += '</p>';
+                    html_body += '</div>';
+
+                    $('#comment').append(html_body);
+                    //初始化登出操作
+                    // loginOut()
+                    var E = window.wangEditor;
+                    editor = new E('#editor');
+                    editor.create();
+                    aaaa()
+
+
+                } else {
+                    alert(result.error)
+                }
+            }
+        });
+
+
+    });
+
+    function aaaa() {
+        $('#button').on('click', function () {
+            console.log(1)
+            var token = window.localStorage.getItem('news_token');
+            var content = editor.txt.html();
+            var post_data = { 'content': content }
+            $.ajax({
+                // 请求方式
+                type: "post",
+                // contentType 
+                contentType: "application/json",
+                // dataType
+                dataType: "json",
+                // url
+                url: "http://176.47.10.229:8000/v1/comment?news_id=" + newsId,
+                // 把JS的对象或数组序列化一个json 字符串
+                data: JSON.stringify(post_data),
+                // result 为请求的返回结果对象
+                beforeSend: function (request) {
+                    request.setRequestHeader("Authorization", token);
+                },
+                success: function (result) {
+                    if (200 == result.code) {
+                        alert("发布成功")
+                        window.location.reload()
+                    } else {
+                        alert(result.error)
+                        window.location.href = '/login'
+                    }
+                }
+            })
+        });
+
+        //弹窗
+        var list = document.getElementsByClassName('replyComment');
+        for (var i of list) {
+            i.addEventListener("click", function (ev) {
+                ev.preventDefault();
+                console.log('123123123')
+                var m_id = this.getAttribute('mid')
+                var txt = "请输入回复：";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.input, {
+                    onOk: function (reply) {
+                        //console.log(reply);
+                        var token = window.localStorage.getItem('news_token');
+                        var post_data = { 'content': reply, 'parent_id': m_id };
+                        var reply_url = "http://176.47.10.229:8000/v1/comment?news_id=" + newsId;
+                        $.ajax({
+                            // 请求方式
+                            type: "post",
+                            // contentType 
+                            contentType: "application/json",
+                            // dataType
+                            dataType: "json",
+                            // url
+                            url: reply_url,
+                            // 把JS的对象或数组序列化一个json 字符串
+                            data: JSON.stringify(post_data),
+                            // result 为请求的返回结果对象
+                            beforeSend: function (request) {
+                                request.setRequestHeader("Authorization", token);
+                            },
+                            success: function (result) {
+                                if (200 == result.code) {
+                                    alert("发布成功")
+                                    window.location.reload()
+                                } else {
+                                    alert(result.error)
+                                    window.location.href = '/login'
+                                }
+                            }
+                        })
+                    }
+                });
+            }, false);
+        }
+
+    };
+
+</script>
+
+</html>

@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^v1/favorite', include('favorite.urls')),
     url(r'^v1/users', include('user.urls')),
     url(r'^v1/tokens', include('btoken.urls')),
+    url(r'^v1/news',include('news.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
